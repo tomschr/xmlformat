@@ -1,8 +1,23 @@
 #!/bin/bash
 
+function has() {
+  curl -sL https://git.io/_has | bash -s $1
+  if [ "$?" == "0" ]; then
+    echo "Autodetected available $1"
+    language=$1
+    return 0
+  fi
+ return 1;
+}
+
+function autoDetectLang() {
+  echo "Starting language autodetection."
+  has "ruby" || has "perl" || has "docker" || has "podman" || (echo "Unable to detect a supported languaje. ABORTING!" && exit 2)
+}
+
 # Parameters
 script_folder=$(dirname "$0")
-language="${XMLFORMAT_LANG:-pl}"
+language="${XMLFORMAT_LANG}"
 verbose_flag=0
 
 while getopts l:f:vsuhoVp FLAG; do
@@ -27,6 +42,8 @@ while getopts l:f:vsuhoVp FLAG; do
 done
 shift $(($OPTIND - 1))
 
+[ -z "$language" ] && autoDetectLang
+
 # Default configuration
 if [ -z "$cfg_file" ] ; then
   cfg_file="${XMLFORMAT_CONF:-$script_folder/xmlformat.conf}" 
@@ -37,6 +54,8 @@ fi
 (( verbose_flag > 0)) && echo "Configuration file: $cfg_file"
 (( verbose_flag > 1)) && XMLFORMAT_ARGS="-v ${XMLFORMAT_ARGS}"
 (( verbose_flag > 1)) && echo "Format arguments: $XMLFORMAT_ARGS"
+
+# Execute script-based formatting
 let errors=0
 for inputfile in $@; do  
     (( verbose_flag > 0)) && echo "Formatting file: $inputfile"
@@ -57,5 +76,6 @@ if [[ $errors != 0 ]] ; then
   exit 1
 fi
 
+echo "Done"
 exit 0
 

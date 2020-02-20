@@ -1,0 +1,5 @@
+#!/bin/bash
+IMAGE="quay.io/someth2say/xmlformat"
+TAG="0.3"
+#TODO: Adapt $@ to refer to the /src mount
+docker run -v "$(pwd)":/src:z $IMAGE:$TAG /src/$@

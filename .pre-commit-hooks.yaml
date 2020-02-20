@@ -28,3 +28,12 @@
   language: script
   require_serial: true
 
+- id: xmlformat
+  name: XML Formatter
+  description: >
+    Formats XML files according GLS formating rules
+  entry: bin/xmlformat.sh
+  args: []
+  types: [xml]
+  language: script
+  require_serial: true
